@@ -1,2 +1,5 @@
 # publicgooglesheetsproject
- Using requests to get a csv from a public google sheet and then processing the data.
+* Using requests to get public google sheets
+* Using pandas to create dataframes
+* Using sqlalchemy to create a PostgreSQL database and tables
+* Finally using pandas.to_sql() to export dataframes to PostgreSQL database
