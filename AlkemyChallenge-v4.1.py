@@ -34,7 +34,7 @@ from datetime import date
 from sqlalchemy import create_engine
 
 # Se obtienen los 3 archivos fuente
-# In[1]:
+# In[2]:
 
 today = date.today()
 today = today.strftime("%d-%m-%Y")
@@ -87,7 +87,7 @@ df3 = pd.read_csv(f"D:\DATA\Alkemy\\bibliotecas\\2022-octubre\\bibliotecas-{toda
 
 # Antes se crea el dataframe "df1_fuente", necesario para la creación del dataframe "df_fuente"
 # In[7]:
-df1_fuente = df1
+df1_fuente = df1[:]
 
 # Se eliminan las columnas innecesarias:
 # In[11]:
@@ -134,7 +134,7 @@ df1 = df1.astype("string")
 
 # Antes se crea el dataframe "df2_fuente", necesario para la creación del dataframe "df_fuente"
 # In[11]:
-df2_fuente = df2
+df2_fuente = df2[:]
 
 # Se eliminan las columnas innecesarias:
 # In[11]:
@@ -187,7 +187,7 @@ df2 = df2.astype("string")
 
 # Antes se crea el dataframe "df3_fuente", necesario para la creación del dataframe "df_fuente"
 # In[16]:
-df3_fuente = df3
+df3_fuente = df3[:]
 
 # Se eliminan las columnas innecesarias:
 # In[11]:
@@ -271,7 +271,7 @@ df.to_excel("tabla única - museos_cines_bibliotecas.xlsx", sheet_name="Tabla ú
 
 # I. Se crea la tabla "Cantidad de registros totales por categoría"
 # In[27]:
-df_countbycat = df.pivot_table(index="categoría", aggfunc="count", values="nombre")
+df_countbycat = df.pivot_table(index="categoria", aggfunc="count", values="nombre")
 
 # Se resetea el index y se normaliza el dataframe
 # In[28]:
@@ -288,7 +288,7 @@ df_countbycat.to_excel(
 
 
 # II. Se crea el dataframe "df_fuente", necesario para la tabla "Cantidad de registros totales por fuente"
-
+df2_fuente.head(1)
 # Se normalizan los dataframes
 # In[20]:
 df1_fuente = df1_fuente[["categoria", "fuente"]]
@@ -351,7 +351,7 @@ df_fuente.to_excel("registros totales por fuente.xlsx", sheet_name="RT por Fuent
 # III. Se crea la tabla "Cantidad de registros por provincia y categoría"
 # In[31]:
 df_countbyprov = df.pivot_table(
-    index=["categoría", "provincia"], aggfunc="count", values="nombre"
+    index=["categoria", "provincia"], aggfunc="count", values="nombre"
 )
 
 # Se resetea el index y se normaliza el dataframe
@@ -667,3 +667,5 @@ try:
     print("Los datos fueron exportados exitosamente y se cerró la conexión!!")
 except:
     print("Hubo un error!")
+
+# %%
