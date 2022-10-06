@@ -534,7 +534,30 @@ except:
     print("La 'tabla_categorias' ya existe! (O hubo un error)")
 
 
-# ### d. Se crea la "tabla_cat_prov"
+# ### d. Se crea la "tabla_fuentes"
+# In[782]:
+engine = create_engine("postgresql://postgres:sjgm1324@localhost/alkemy")
+conn = engine.connect()
+conn.execute("commit")
+
+# Se ejecuta la query
+try:
+    conn.execute(
+        """CREATE TABLE tabla_fuentes (
+            index SERIAL,
+            fuente VARCHAR(100),
+            cantidad INT,
+            fecha_carga DATE DEFAULT CURRENT_DATE
+            )
+           """
+    )
+    conn.close()
+    print("La 'tabla_fuentes' fue creada exitosamente!!")
+except:
+    print("La 'tabla_fuentes' ya existe! (O hubo un error)")
+
+
+# ### e. Se crea la "tabla_cat_prov"
 # In[782]:
 engine = create_engine("postgresql://postgres:sjgm1324@localhost/alkemy")
 conn = engine.connect()
@@ -558,7 +581,7 @@ except:
     print("La 'tabla_cat_prov' ya existe! (O hubo un error)")
 
 
-# ### e. Se crea la "tabla_cines"
+# ### f. Se crea la "tabla_cines"
 # In[782]:
 engine = create_engine("postgresql://postgres:sjgm1324@localhost/alkemy")
 conn = engine.connect()
@@ -604,7 +627,7 @@ conn.execute("commit")
 try:
     with engine.connect().execution_options(autocommit=True) as conn:
         df.to_sql("tabla_01", con=conn, method="multi", if_exists="replace", index=True)
-    print("Los datos fueron exportados exitosamente!!")
+    print("Los datos de la 'tabla_01' fueron exportados exitosamente!!")
 except:
     print("Hubo un error!")
 
@@ -627,12 +650,33 @@ try:
             if_exists="replace",
             index=True,
         )
-    print("Los datos fueron exportados exitosamente!!")
+    print("Los datos de la 'tabla_categorias' fueron exportados exitosamente!!")
 except:
     print("Hubo un error!")
 
 
-# ### c. tabla_cat_prov
+# ### c. tabla_fuentes
+# Se crea una columna con la fecha de carga y se exportan los datos a la tabla
+# In[ ]:
+df_fuente["fecha_carga"] = pd.Timestamp.now()
+df_fuente["fecha_carga"] = pd.to_datetime(df_fuente["fecha_carga"], format="%Y/%m/%d")
+df_fuente["fecha_carga"] = df_fuente["fecha_carga"].dt.strftime("%Y-%m-%d")
+
+try:
+    with engine.connect().execution_options(autocommit=True) as conn:
+        df_fuente.to_sql(
+            "tabla_fuentes",
+            con=conn,
+            method="multi",
+            if_exists="replace",
+            index=True,
+        )
+    print("Los datos de la 'tabla_fuentes' fueron exportados exitosamente!!")
+except:
+    print("Hubo un error!")
+
+
+# ### d. tabla_cat_prov
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df_countbyprov["fecha_carga"] = pd.Timestamp.now()
@@ -646,12 +690,12 @@ try:
         df_countbyprov.to_sql(
             "tabla_cat_prov", con=conn, method="multi", if_exists="replace", index=True
         )
-    print("Los datos fueron exportados exitosamente!!")
+    print("Los datos de la 'tabla_cat_prov' fueron exportados exitosamente!!")
 except:
     print("Hubo un error!")
 
 
-# ### d. tabla_cines
+# ### e. tabla_cines
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df_cines["fecha_carga"] = pd.Timestamp.now()
@@ -664,7 +708,9 @@ try:
             "tabla_cines", con=conn, method="multi", if_exists="replace", index=True
         )
     conn.close()
-    print("Los datos fueron exportados exitosamente y se cerró la conexión!!")
+    print(
+        "Los datos de la 'tabla_cines' fueron exportados exitosamente y se cerró la conexión!!"
+    )
 except:
     print("Hubo un error!")
 
