@@ -1,29 +1,7 @@
-# # **1. Importación de las librerías y almacenamiento local de los archivos csv**
-#
-# *   Librerías: Pandas y Requests
-# *   Fuente de los datos: Google Sheets (public)
-#
-# Los archivos fuentes serán utilizados en tu proyecto para obtener de ellos todo lo
-# necesario para popular la base de datos. El proyecto deberá:
-# ### ● Obtener los 3 archivos de fuente utilizando la librería requests y
-# almacenarse en forma local (Ten en cuenta que las urls pueden cambiar en
-# un futuro):
-#
-# *   Datos Argentina - Museos
-# *   Datos Argentina - Salas de Cine
-# *   Datos Argentina - Bibliotecas Populares
-#
-#
-# ### ● Organizar los archivos en rutas siguiendo la siguiente estructura:
-# “categoría\año-mes\categoria-dia-mes-año.csv”
-# * Por ejemplo: “museos\2021-noviembre\museos-03-11-2021”
-# * Si el archivo existe debe reemplazarse. La fecha de la nomenclatura
-# es la fecha de descarga.
+# # 1. Importación de las librerías y almacenamiento local de los archivos csv
 
-
-# Se importan las librerías, módulos y variables
+# Se importan los paquetes, librerías y módulos
 # In[1]:
-
 import os
 import logging
 import requests
@@ -33,6 +11,7 @@ from datetime import date
 from sqlalchemy import create_engine
 from decouple import config
 
+# Se configura el log
 logging.basicConfig(
     filename="alke.log",
     filemode="w",
@@ -42,17 +21,41 @@ logging.basicConfig(
 )
 logging.info("Logged in!")
 
+# Se obtienen los datos de la configuración para la conexión PostgreSQL
 try:
     USER = config("USER", default="postgres")
     PASS = config("PASS")
     HOST = config("HOST", default="localhost")
+    logging.info(
+        "Los datos de la configuracion para la conexion PostgreSQL fueron obtenidos exitosamente!!"
+    )
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
+
+
+# Se crean los directorios para organizar los archivos
+# In[2]:
+today = date.today()
+today_folder = today.strftime("%Y-%B")
+
+current_directory = os.getcwd()
+final_directory = os.path.join(current_directory, f"bibliotecas\{today_folder}")
+if not os.path.exists(final_directory):
+    os.makedirs(final_directory)
+
+current_directory = os.getcwd()
+final_directory = os.path.join(current_directory, f"cines\{today_folder}")
+if not os.path.exists(final_directory):
+    os.makedirs(final_directory)
+
+current_directory = os.getcwd()
+final_directory = os.path.join(current_directory, f"museos\{today_folder}")
+if not os.path.exists(final_directory):
+    os.makedirs(final_directory)
 
 # Se obtienen los 3 archivos fuente
 # In[2]:
 
-today = date.today()
 today = today.strftime("%d-%m-%Y")
 
 try:
@@ -60,53 +63,39 @@ try:
     r = requests.get(
         "https://docs.google.com/spreadsheet/ccc?key=1PS2_yAvNVEuSY0gI8Nky73TQMcx_G1i18lm--jOGfAA&output=csv"
     )
-    open(f"D:\DATA\Alkemy\museos\\2022-octubre\museos-{today}.csv", "wb").write(
+    open(f"D:\DATA\Alkemy\museos\{today_folder}\museos-{today}.csv", "wb").write(
         r.content
     )
-    df1 = pd.read_csv(f"D:\DATA\Alkemy\museos\\2022-octubre\museos-{today}.csv")
+    df1 = pd.read_csv(f"D:\DATA\Alkemy\museos\{today_folder}\museos-{today}.csv")
     df1["subcategoria"].fillna("Museos", inplace=True)
 
     # Se obtiene el archivo fuente de "cines"
     r = requests.get(
         "https://docs.google.com/spreadsheet/ccc?key=1o8QeMOKWm4VeZ9VecgnL8BWaOlX5kdCDkXoAph37sQM&output=csv"
     )
-    open(f"D:\DATA\Alkemy\cines\\2022-octubre\cines-{today}.csv", "wb").write(r.content)
-    df2 = pd.read_csv(f"D:\DATA\Alkemy\cines\\2022-octubre\cines-{today}.csv")
+    open(f"D:\DATA\Alkemy\cines\{today_folder}\cines-{today}.csv", "wb").write(
+        r.content
+    )
+    df2 = pd.read_csv(f"D:\DATA\Alkemy\cines\{today_folder}\cines-{today}.csv")
 
     # Se obtiene el archivo fuente de "bibliotecas"
     r = requests.get(
         "https://docs.google.com/spreadsheet/ccc?key=1udwn61l_FZsFsEuU8CMVkvU2SpwPW3Krt1OML3cYMYk&output=csv"
     )
     open(
-        f"D:\DATA\Alkemy\\bibliotecas\\2022-octubre\\bibliotecas-{today}.csv", "wb"
+        f"D:\DATA\Alkemy\\bibliotecas\{today_folder}\\bibliotecas-{today}.csv", "wb"
     ).write(r.content)
     df3 = pd.read_csv(
-        f"D:\DATA\Alkemy\\bibliotecas\\2022-octubre\\bibliotecas-{today}.csv"
+        f"D:\DATA\Alkemy\\bibliotecas\{today_folder}\\bibliotecas-{today}.csv"
     )
     logging.info("Los archivos fuente fueron obtenidos exitosamente!!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
-# # **2. Procesamiento de los datos**
 
-# > ### A. Normalizar toda la información de Museos, Salas de Cine y Bibliotecas
-# Populares, para crear una única tabla que contenga:
-#
-# *   cod_localidad
-# *   id_provincia
-# *   id_departamento
-# *   categoría
-# *   provincia
-# *   localidad
-# *   nombre
-# *   domicilio
-# *   código postal
-# *   número de teléfono
-# *   mail
-# *   web
-#
+# # 2. Procesamiento de los datos
 
-# I. Se normaliza el dataframe de museos:
+# 2.a. Se normaliza el dataframe de museos:
 
 # Antes se crea el dataframe "df1_fuente", necesario para la creación del dataframe "df_fuente"
 # In[7]:
@@ -153,8 +142,8 @@ df1.rename(
 # In[9]:
 df1 = df1.astype("string")
 
-# II. Se normaliza el dataframe de cines:
 
+# 2.b. Se normaliza el dataframe de cines:
 # Antes se crea el dataframe "df2_fuente", necesario para la creación del dataframe "df_fuente"
 # In[11]:
 df2_fuente = df2[:]
@@ -206,7 +195,7 @@ df2.rename(
 df2 = df2.astype("string")
 
 
-# III. Se normaliza el dataframe de bibliotecas:
+# 2.c. Se normaliza el dataframe de bibliotecas:
 
 # Antes se crea el dataframe "df3_fuente", necesario para la creación del dataframe "df_fuente"
 # In[16]:
@@ -257,7 +246,8 @@ df3.rename(
 # In[18]:
 df3 = df3.astype("string")
 
-# IV. Se unen los tres dataframes en una única tabla:
+
+# 2.d. Se unen los tres dataframes en una única tabla:
 # In[20]:
 frames1 = [df1, df2, df3]
 df = pd.concat(frames1, ignore_index=True)
@@ -268,7 +258,7 @@ def correct(x):
     if x == "Santa Fé":
         return "Santa Fe"
     elif x == "Tierra del Fuego":
-        return "Tierra del Fuego, Antártida e Islas del Atlántico Sur"
+        return "Tierra del Fuego, Antartida e Islas del Atlantico Sur"
     else:
         return x
 
@@ -292,13 +282,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# > ### B. Procesar los datos conjuntos para poder generar una tabla con la siguiente información:
-# * Cantidad de registros totales por categoría
-# * Cantidad de registros totales por fuente
-# * Cantidad de registros por provincia y categoría
-
-
-# I. Se crea la tabla "Cantidad de registros totales por categoría"
+# 2.e. Se crea la tabla "Cantidad de registros totales por categoría"
 # In[27]:
 df_countbycat = df.pivot_table(index="categoria", aggfunc="count", values="nombre")
 
@@ -322,8 +306,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# II. Se crea el dataframe "df_fuente", necesario para la tabla "Cantidad de registros totales por fuente"
-df2_fuente.head(1)
+# 2.f. Se crea el dataframe "df_fuente", necesario para la tabla "Cantidad de registros totales por fuente"
 # Se normalizan los dataframes
 # In[20]:
 df1_fuente = df1_fuente[["categoria", "fuente"]]
@@ -388,7 +371,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# III. Se crea la tabla "Cantidad de registros por provincia y categoría"
+# 2.g. Se crea la tabla "Cantidad de registros por provincia y categoría"
 # In[31]:
 df_countbyprov = df.pivot_table(
     index=["categoria", "provincia"], aggfunc="count", values="nombre"
@@ -414,24 +397,29 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# > ### C. Procesar la información de cines para poder crear una tabla que contenga:
+# 2.h. Procesar la información de cines para poder crear una tabla que contenga:
 # * Provincia
 # * Cantidad de pantallas
 # * Cantidad de butacas
 # * Cantidad de espacios INCAA
 
-# Se obtiene el archivo fuente de "cines"
+# Se obtiene el archivo fuente de "cines", se crea "df_cines" y luego se elimina el archivo csv
 # In[35]:
-r = requests.get(
-    "https://docs.google.com/spreadsheet/ccc?key=1o8QeMOKWm4VeZ9VecgnL8BWaOlX5kdCDkXoAph37sQM&output=csv"
-)
-open("df_cines.csv", "wb").write(r.content)
-df_cines = pd.read_csv("df_cines.csv")
+try:
+    r = requests.get(
+        "https://docs.google.com/spreadsheet/ccc?key=1o8QeMOKWm4VeZ9VecgnL8BWaOlX5kdCDkXoAph37sQM&output=csv"
+    )
+    open("df_cines.csv", "wb").write(r.content)
+    df_cines = pd.read_csv("df_cines.csv")
+except Exception as e:
+    logging.exception("Exception occurred", exc_info=True)
+finally:
+    if os.path.exists("df_cines.csv"):
+        os.remove("df_cines.csv")
 
 # Se seleccionan las columnas necesarias
 # In[36]:
 df_cines = df_cines[["Provincia", "Pantallas", "Butacas", "espacio_INCAA"]]
-df_cines.head()
 
 # Se cambian los valores null para luevo poder sumar los registros
 # In[37]:
@@ -456,7 +444,6 @@ df_cines["espacio_INCAA"] = df_cines["espacio_INCAA"].apply(unique)
 # In[43]:
 df_cines["Provincia"] = df_cines["Provincia"].astype("string")
 df_cines["espacio_INCAA"] = df_cines["espacio_INCAA"].astype("int64")
-df_cines.dtypes
 
 # Se crea la tabla con la suma de "Pantallas", "Butacas" y "espacio_INCAA"
 # In[45]:
@@ -467,7 +454,6 @@ df_cines = df_cines.pivot_table(
 # Se resetea el index del dataframe df_cines para incluir "Provincia" como columna
 # In[46]:
 df_cines.reset_index(inplace=True)
-df_cines.dtypes
 
 # Se exporta el dataframe a un nuevo archivo excel
 # In[778]:
@@ -480,15 +466,9 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# # 3. Creación de la base de datos y sus tablas:
-# Para disponibilizar la información obtenida y procesada en los pasos previos, tu
-# proyecto deberá tener una base de datos que cumpla con los siguientes requisitos:
-# * La base de datos debe ser PostgreSQL
-# * Se deben crear los scripts .sql para la creación de las tablas.
-# * Se debe crear un script .py que ejecute los scripts .sql para facilitar el deploy.
-# * Los datos de la conexión deben poder configurarse fácilmente para facilitar el deploy en un nuevo ambiente de ser necesario.
+# # 3. Creación de la base de datos y sus tablas
 
-# ### a. Se crea la conexión y la base de datos
+# 3.a. Se crea la conexión y la base de datos
 
 # Se crea la conexión
 # In[11]:
@@ -504,7 +484,6 @@ try:
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
-
 # Se crea la base de datos "alkemy"
 # In[5]:
 engine = create_engine(f"postgresql://{USER}:{PASS}@{HOST}")
@@ -516,19 +495,19 @@ try:
     conn.close()
     logging.info("La base de datos 'alkemy' fue creada exitosamente!!")
 except sqlalchemy.exc.ProgrammingError:
+    conn.close()
     logging.error("La base de datos 'alkemy' ya existe!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### b. Se crea la "tabla_01"
+# 3.b. Se crea la "tabla_01"
 # In[70]:
 
 # Se crea la conexión a la nueva base de datos
 engine = create_engine(f"postgresql://{USER}:{PASS}@{HOST}/alkemy")
 conn = engine.connect()
 conn.execute("commit")
-
 
 # Se ejecuta la query
 try:
@@ -553,12 +532,13 @@ try:
     conn.close()
     logging.info("La 'tabla_01' fue creada exitosamente!!")
 except sqlalchemy.exc.ProgrammingError:
+    conn.close()
     logging.error("La 'tabla_01' ya existe!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### c. Se crea la "tabla_categorias"
+# 3.c. Se crea la "tabla_categorias"
 # In[782]:
 engine = create_engine(f"postgresql://{USER}:{PASS}@{HOST}/alkemy")
 conn = engine.connect()
@@ -578,12 +558,13 @@ try:
     conn.close()
     logging.info("La 'tabla_categorias' fue creada exitosamente!!")
 except sqlalchemy.exc.ProgrammingError:
+    conn.close()
     logging.error("La 'tabla_categorias' ya existe!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### d. Se crea la "tabla_fuentes"
+# 3.d. Se crea la "tabla_fuentes"
 # In[782]:
 engine = create_engine(f"postgresql://{USER}:{PASS}@{HOST}/alkemy")
 conn = engine.connect()
@@ -603,12 +584,13 @@ try:
     conn.close()
     logging.info("La 'tabla_fuentes' fue creada exitosamente!!")
 except sqlalchemy.exc.ProgrammingError:
+    conn.close()
     logging.error("La 'tabla_fuentes' ya existe!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### e. Se crea la "tabla_cat_prov"
+# 3.e. Se crea la "tabla_cat_prov"
 # In[782]:
 engine = create_engine(f"postgresql://{USER}:{PASS}@{HOST}/alkemy")
 conn = engine.connect()
@@ -629,12 +611,13 @@ try:
     conn.close()
     logging.info("La 'tabla_cat_prov' fue creada exitosamente!!")
 except sqlalchemy.exc.ProgrammingError:
+    conn.close()
     logging.error("La 'tabla_cat_prov' ya existe!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### f. Se crea la "tabla_cines"
+# 3.f. Se crea la "tabla_cines"
 # In[782]:
 engine = create_engine(f"postgresql://{USER}:{PASS}@{HOST}/alkemy")
 conn = engine.connect()
@@ -656,19 +639,15 @@ try:
     conn.close()
     logging.info("La 'tabla_cines' fue creada exitosamente!!")
 except sqlalchemy.exc.ProgrammingError:
+    conn.close()
     logging.error("La 'tabla_cines' ya existe!")
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# # 4. Actualización de la base de datos:
-# Luego de normalizar la información y generar las demás tablas, las mismas se
-# deben actualizar en la base de datos. Para eso, es importante tener en cuenta que:
-# * Todos los registros existentes deben ser reemplazados por la nueva información.
-# * Dentro de cada tabla debe indicarse en una columna adicional la fecha de carga.
-# * Los registros para los cuales la fuente no brinda información deben cargarse como nulos.
+# # 4. Actualización de la base de datos
 
-# ### a. tabla_01
+# 4.a. tabla_01
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df["fecha_carga"] = pd.Timestamp.now()
@@ -687,7 +666,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### b. tabla_categorias
+# 4.b. tabla_categorias
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df_countbycat["fecha_carga"] = pd.Timestamp.now()
@@ -710,7 +689,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### c. tabla_fuentes
+# 4.c. tabla_fuentes
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df_fuente["fecha_carga"] = pd.Timestamp.now()
@@ -731,7 +710,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### d. tabla_cat_prov
+# 4.d. tabla_cat_prov
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df_countbyprov["fecha_carga"] = pd.Timestamp.now()
@@ -750,7 +729,7 @@ except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
 
 
-# ### e. tabla_cines
+# 4.e. tabla_cines
 # Se crea una columna con la fecha de carga y se exportan los datos a la tabla
 # In[ ]:
 df_cines["fecha_carga"] = pd.Timestamp.now()
@@ -762,14 +741,12 @@ try:
         df_cines.to_sql(
             "tabla_cines", con=conn, method="multi", if_exists="replace", index=True
         )
-    conn.close()
-    logging.info(
-        "Los datos de la 'tabla_cines' fueron exportados exitosamente y se cerro la conexion!!"
-    )
+        logging.info(
+            "Los datos de la 'tabla_cines' fueron exportados exitosamente y se cerro la conexion!!"
+        )
 except Exception as e:
     logging.exception("Exception occurred", exc_info=True)
-
-logging.info("Logged out!")
-
-
-# %%
+finally:
+    # Al finalizar la ejecución se cierra la conexión y se cierra el log
+    conn.close()
+    logging.info("Logged out!")

@@ -3,5 +3,8 @@
         {
             "path": "../../../Alkemy"
         }
-    ]
+    ],
+    "settings": {
+        "activestate.promptRuntimeCreation": false
+    }
 }
