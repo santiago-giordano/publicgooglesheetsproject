@@ -53,6 +53,11 @@ final_directory = os.path.join(current_directory, f"museos\{today_folder}")
 if not os.path.exists(final_directory):
     os.makedirs(final_directory)
 
+current_directory = os.getcwd()
+final_directory = os.path.join(current_directory, f"excel files\{today_folder}")
+if not os.path.exists(final_directory):
+    os.makedirs(final_directory)
+
 # Se obtienen los 3 archivos fuente
 # In[2]:
 
@@ -274,7 +279,10 @@ df["provincia"] = df["provincia"].astype("string")
 # Se exporta el dataframe a un nuevo archivo excel
 # In[25]:
 try:
-    df.to_excel("tabla única - museos_cines_bibliotecas.xlsx", sheet_name="Tabla única")
+    df.to_excel(
+        f"excel files\{today_folder}\\tabla única - museos_cines_bibliotecas.xlsx",
+        sheet_name="Tabla única",
+    )
     logging.info(
         "La tabla unica con los datos de museos, cines y bibliotecas fue exportada a un archivo excel exitosamente!"
     )
@@ -297,7 +305,8 @@ df_countbycat.rename(
 # In[29]:
 try:
     df_countbycat.to_excel(
-        "registros totales por categoría.xlsx", sheet_name="RT por Categoría"
+        f"excel files\{today_folder}\\registros totales por categoría.xlsx",
+        sheet_name="RT por Categoría",
     )
     logging.info(
         "La tabla con los registros totales por categoria fue exportada a un archivo excel exitosamente!"
@@ -363,7 +372,10 @@ df_fuente.reset_index(inplace=True)
 # Se exporta el dataframe a un nuevo archivo excel
 # In[29]:
 try:
-    df_fuente.to_excel("registros totales por fuente.xlsx", sheet_name="RT por Fuente")
+    df_fuente.to_excel(
+        f"excel files\{today_folder}\\registros totales por fuente.xlsx",
+        sheet_name="RT por Fuente",
+    )
     logging.info(
         "La tabla con los registros totales por fuente fue exportada a un archivo excel exitosamente!"
     )
@@ -388,7 +400,8 @@ df_countbyprov.rename(
 # In[34]:
 try:
     df_countbyprov.to_excel(
-        "registros por provincia y categoría.xlsx", sheet_name="Por Prov-Cat"
+        f"excel files\{today_folder}\\registros por provincia y categoría.xlsx",
+        sheet_name="Por Prov-Cat",
     )
     logging.info(
         "La tabla con los registros por provincia y categoria fue exportada a un archivo excel exitosamente!"
@@ -458,7 +471,7 @@ df_cines.reset_index(inplace=True)
 # Se exporta el dataframe a un nuevo archivo excel
 # In[778]:
 try:
-    df_cines.to_excel("cines.xlsx", sheet_name="cines")
+    df_cines.to_excel(f"excel files\{today_folder}\\cines.xlsx", sheet_name="cines")
     logging.info(
         "La tabla con los datos de cines fue exportada a un archivo excel exitosamente!"
     )
