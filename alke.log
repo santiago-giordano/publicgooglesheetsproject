@@ -1,20 +1,21 @@
-08-Oct-22 17:45:17 - Logged in!
-08-Oct-22 17:45:21 - Los archivos fuente fueron obtenidos exitosamente!!
-08-Oct-22 17:45:23 - La tabla unica con los datos de museos, cines y bibliotecas fue exportada a un archivo excel exitosamente!
-08-Oct-22 17:45:23 - La tabla con los registros totales por categoria fue exportada a un archivo excel exitosamente!
-08-Oct-22 17:45:23 - La tabla con los registros totales por fuente fue exportada a un archivo excel exitosamente!
-08-Oct-22 17:45:23 - La tabla con los registros por provincia y categoria fue exportada a un archivo excel exitosamente!
-08-Oct-22 17:45:24 - La tabla con los datos de cines fue exportada a un archivo excel exitosamente!
-08-Oct-22 17:45:24 - La conexion fue creada exitosamente!!
-08-Oct-22 17:45:24 - La base de datos 'alkemy' ya existe!
-08-Oct-22 17:45:25 - La 'tabla_01' ya existe!
-08-Oct-22 17:45:25 - La 'tabla_categorias' ya existe!
-08-Oct-22 17:45:25 - La 'tabla_fuentes' ya existe!
-08-Oct-22 17:45:25 - La 'tabla_cat_prov' ya existe!
-08-Oct-22 17:45:25 - La 'tabla_cines' ya existe!
-08-Oct-22 17:45:27 - Los datos de la 'tabla_01' fueron exportados exitosamente!!
-08-Oct-22 17:45:27 - Los datos de la 'tabla_categorias' fueron exportados exitosamente!!
-08-Oct-22 17:45:27 - Los datos de la 'tabla_fuentes' fueron exportados exitosamente!!
-08-Oct-22 17:45:27 - Los datos de la 'tabla_cat_prov' fueron exportados exitosamente!!
-08-Oct-22 17:45:27 - Los datos de la 'tabla_cines' fueron exportados exitosamente y se cerro la conexion!!
-08-Oct-22 17:45:27 - Logged out!
+12-Oct-22 16:54:49 - Logged in!
+12-Oct-22 16:54:49 - Los datos de la configuracion para la conexion PostgreSQL fueron obtenidos exitosamente!!
+12-Oct-22 16:54:54 - Los archivos fuente fueron obtenidos exitosamente!!
+12-Oct-22 16:54:56 - La tabla unica con los datos de museos, cines y bibliotecas fue exportada a un archivo excel exitosamente!
+12-Oct-22 16:54:56 - La tabla con los registros totales por categoria fue exportada a un archivo excel exitosamente!
+12-Oct-22 16:54:56 - La tabla con los registros totales por fuente fue exportada a un archivo excel exitosamente!
+12-Oct-22 16:54:56 - La tabla con los registros por provincia y categoria fue exportada a un archivo excel exitosamente!
+12-Oct-22 16:54:57 - La tabla con los datos de cines fue exportada a un archivo excel exitosamente!
+12-Oct-22 16:54:57 - La conexion fue creada exitosamente!!
+12-Oct-22 16:54:57 - La base de datos 'alkemy' ya existe!
+12-Oct-22 16:54:57 - La 'tabla_01' ya existe!
+12-Oct-22 16:54:57 - La 'tabla_categorias' ya existe!
+12-Oct-22 16:54:58 - La 'tabla_fuentes' ya existe!
+12-Oct-22 16:54:58 - La 'tabla_cat_prov' ya existe!
+12-Oct-22 16:54:58 - La 'tabla_cines' ya existe!
+12-Oct-22 16:54:59 - Los datos de la 'tabla_01' fueron exportados exitosamente!!
+12-Oct-22 16:54:59 - Los datos de la 'tabla_categorias' fueron exportados exitosamente!!
+12-Oct-22 16:54:59 - Los datos de la 'tabla_fuentes' fueron exportados exitosamente!!
+12-Oct-22 16:54:59 - Los datos de la 'tabla_cat_prov' fueron exportados exitosamente!!
+12-Oct-22 16:54:59 - Los datos de la 'tabla_cines' fueron exportados exitosamente y se cerro la conexion!!
+12-Oct-22 16:54:59 - Logged out!
